@@ -4,14 +4,15 @@ Written by Luckylau
 Github: https://github.com/Luckylau
 Email: laujunbupt0913@163.com
 
-list the vds network status of all vms in one host ,including portgroup,
-portkey,macaddress,connection status etc.
+list  network information of all vms in vds ,including portgroup,
+portkey,macaddress,vlanId etc.
 
 example :
    input:
          vcenter ip  , username , password ,
    output:
-         [dvs] [portGroup] [port_id] [vlanId] [macAddress] [connectable]
+         virtualMachine: XXXX network information:
+         [dvs] XXX [portGroup] XXX [port_id] XXX [vlanId] XXX [macAddress] XXXX [connectable] XXX
 Known issues:
 This script is running well in centos6.5
 """
