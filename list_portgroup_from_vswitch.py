@@ -1,9 +1,17 @@
-#
-# by lucky lau
-#
-# email :laujunbupt0913@163.com
-#
-#
+#!/usr/bin/env python
+"""
+Written by Luckylau
+Github: https://github.com/Luckylau
+Email: laujunbupt0913@163.com
+
+list portgroup information of virutal switch by name,
+ including thier name ,vlanId
+
+Known issues:
+This script is running well in centos6.5
+"""
+
+
 import sys
 from pyVim.connect import SmartConnect,Disconnect
 import atexit
@@ -47,7 +55,7 @@ def list_portgroup(host,vswitch):
                 if portgroup.key==pg:
                     print "name :"+portgroup.spec.name + " vlanId :" + str(portgroup.spec.vlanId)
     else:
-        print " Portgroup not find ..."
+        print " Portgroup not found ..."
 
 
 def main():
@@ -76,6 +84,6 @@ def main():
         print "Find Virtual Switch , Search portgroup ..."
         list_portgroup(host,vswitch)
     else:
-        print "Virtual Switch not find ..."
+        print "Virtual Switch not found ..."
 if __name__ == '__main__':
     main()

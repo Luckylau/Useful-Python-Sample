@@ -1,3 +1,16 @@
+#!/usr/bin/env python
+"""
+Written by Luckylau
+Github: https://github.com/Luckylau
+Email: laujunbupt0913@163.com
+
+add nic to an existing VM
+
+Known issues:
+This script is running well in centos6.5
+"""
+
+
 from pyVim.connect import SmartConnect,Disconnect
 import atexit
 from pyVmomi import vim
