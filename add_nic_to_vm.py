@@ -4,7 +4,7 @@ Written by Luckylau
 Github: https://github.com/Luckylau
 Email: laujunbupt0913@163.com
 
-add nic to an existing VM
+add nic to VM,the tworkadapter is set in vss portgroup
 
 Known issues:
 This script is running well in centos6.5
@@ -65,12 +65,12 @@ def get_args():
     if len(sys.argv)>1:
         host,user,password,vm_name,port_group,macAddress=sys.argv[1:]
     else:
-        host=raw_input("Host IP : ")
-        user=raw_input("Username: ")
+        host=raw_input("Vcenter IP : ")
+        user=raw_input("User: ")
         password=raw_input("Password: ")
         vm_name=raw_input("Vm_name: ")
         port_group=raw_input("Port_group: ")
-        macAddress=raw_input("Set macAddress manually :")
+        macAddress=raw_input("Input MacAddress:")
     return host,user,password,vm_name,port_group,macAddress
 
 def main():
