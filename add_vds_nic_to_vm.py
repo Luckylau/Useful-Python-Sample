@@ -105,7 +105,7 @@ def get_args():
         vm_name=raw_input("VM_name: ")
         port_group=raw_input("Port_Group: ")
         macAddress=raw_input("Input MacAddress :")
-        port_name=raw_input("Ipnput portname:")
+        port_name=raw_input("Input portname:")
         port_description=raw_input("Input port description:")
     return host,user,password,vm_name,port_group,macAddress,port_name,port_description
 
@@ -128,15 +128,19 @@ def set_port(dvs,portkey,name,description):
 
 
 def main():
-    #Vcenter,user,password,vm_name,port_group,macAddress,port_name,port_description=get_args()
+    host,user,password,vm_name,port_group,macAddress,port_name,port_description=get_args()
+    ''''
     host="10.0.36.60"
     user="administrator@vsphere.local"
-    password="Sugon;123"
-    vm_name="liujuntestvm80"
+    password=" "
+    vm_name="liujuntestvm83"
     port_group="DPortGroup"
     macAddress="fa:cd:45:ed:56:e6"
     port_name="luckylau"
     port_description="laujunbupt0913@163.com"
+    '''
+
+
     default_port="443"
 
     serviceInstance=SmartConnect(host=host,
