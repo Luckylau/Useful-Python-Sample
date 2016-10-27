@@ -99,7 +99,7 @@ def main():
 
     host = "10.0.36.60"
     user = "administrator@vsphere.local"
-    password = "Sugon;123"
+    password = " "
     vds = "DSwitch"
     port_group = "luckylau1"
     vlanId=12
