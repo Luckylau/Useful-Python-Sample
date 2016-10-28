@@ -110,6 +110,9 @@ def clear_portinfo(dvs, portkey):
     portconfig.key = portkey
     portconfig.name = " "
     portconfig.description = " "
+    portconfig.setting = vim.dvs.VmwareDistributedVirtualSwitch.VmwarePortConfigPolicy()
+    portconfig.setting.vlan = vim.dvs.VmwareDistributedVirtualSwitch.VlanIdSpec()
+    portconfig.setting.vlan.vlanId=0
     port_configs.append(portconfig)
     dvs.ReconfigureDVPort_Task(port_configs)
 
