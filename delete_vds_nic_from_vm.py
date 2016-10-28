@@ -23,7 +23,7 @@ def get_args():
         description='Argument for talking to vCenter'
     )
 
-    parser.add_argument('-s','--host',
+    parser.add_argument('-s', '--host',
                         required=True,
                         action='store',
                         help='Vcenter Ip')
@@ -52,12 +52,12 @@ def get_args():
     parser.add_argument('-m', '--unit-number',
                         required=True,
                         type=int,
-                        help='HDD number to delete.' )
+                        help='HDD number to delete.')
 
     args = parser.parse_args()
 
     if not args.password:
-        args.password=getpass.getpass(prompt='Enter password:')
+        args.password = getpass.getpass(prompt='Enter password:')
 
     return args
 
@@ -65,19 +65,19 @@ def get_args():
 def get_obj(content, vimtype, name):
     obj = None
     container = content.viewManager.CreateContainerView(
-        content.rootFolder,vimtype,True
+        content.rootFolder, vimtype, True
     )
     for c in container.view:
-        if c.name==name:
-            obj=c
+        if c.name == name:
+            obj = c
             break
     return obj
 
 
-def delete_nic(si,vm,nic_number):
+def delete_nic(si, vm, nic_number):
     spec = vim.vm.ConfigSpec()
     nic_changes = []
-    nic_prefix_label="Network adapter "
+    nic_prefix_label = "Network adapter "
     nic_label = nic_prefix_label + str(nic_number)
     virtual_nic_device = None
     for dev in vm.config.hardware.device:
@@ -91,15 +91,14 @@ def delete_nic(si,vm,nic_number):
     nic_spec.operation = vim.vm.device.VirtualDeviceSpec.Operation.remove
     nic_spec.device = virtual_nic_device
     nic_changes.append(nic_spec)
-    spec.deviceChange=nic_changes
+    spec.deviceChange = nic_changes
     task = vm.ReconfigVM_Task(spec=spec)
     #tasks.wait_for_tasks(si, [task])
     print "Nic card remoted success ..."
 
 
-
 def main():
-    args=get_args()
+    args = get_args()
     serviceInstance = SmartConnect(host=args.host,
                                    user=args.user,
                                    pwd=args.password,
@@ -117,7 +116,7 @@ def main():
     vm = get_obj(content, [vim.VirtualMachine], args.vm_name)
     if vm:
         print "Find Vm , delete nic card ..."
-        delete_nic(serviceInstance,vm,args.unit_number)
+        delete_nic(serviceInstance, vm, args.unit_number)
     else:
         print "Vm not Found ..."
 

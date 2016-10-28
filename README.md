@@ -1,3 +1,2 @@
-# my-pyvmomi-samples
-The samples is running in Centos 6.5 sucessfully .
-firstly ,you need pip install pyVmomi
+# my-samples
+The samples is running in Centos 6.5 sucessfully by python 2.6.6

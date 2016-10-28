@@ -22,7 +22,7 @@ def get_args():
         description='Argument for talking to vCenter'
     )
 
-    parser.add_argument('-s','--host',
+    parser.add_argument('-s', '--host',
                         required=True,
                         action='store',
                         help='Vcenter Ip')
@@ -51,7 +51,7 @@ def get_args():
     args = parser.parse_args()
 
     if not args.password:
-        args.password=getpass.getpass(prompt='Enter password:')
+        args.password = getpass.getpass(prompt='Enter password:')
 
     return args
 
@@ -59,31 +59,32 @@ def get_args():
 def get_obj(content, vimtype, name):
     obj = None
     container = content.viewManager.CreateContainerView(
-        content.rootFolder,vimtype,True
+        content.rootFolder, vimtype, True
     )
     for c in container.view:
-        if c.name==name:
-            obj=c
+        if c.name == name:
+            obj = c
             break
     return obj
 
 
-def criteria(dvs,portgroup,connected):
+def criteria(dvs, portgroup, connected):
     criteria = vim.dvs.PortCriteria()
     criteria.inside = True
     criteria.portgroupKey = portgroup.key
     if connected:
         criteria.connected = connected
-    ports=dvs.FetchDVPorts(criteria)
+    ports = dvs.FetchDVPorts(criteria)
     return ports
 
-def delete_dvsportgroup(dvs,portgroup):
-    unusedports=[]
-    allports=[]
-    unusedports=criteria(dvs,portgroup,False)
-    allports=criteria(dvs,portgroup,None)
 
-    if len(unusedports)==len(allports):
+def delete_dvsportgroup(dvs, portgroup):
+    unusedports = []
+    allports = []
+    unusedports = criteria(dvs, portgroup, False)
+    allports = criteria(dvs, portgroup, None)
+
+    if len(unusedports) == len(allports):
         portgroup.Destroy_Task()
         print "DvsPortGroup deleted sucess ..."
     else:
@@ -91,7 +92,7 @@ def delete_dvsportgroup(dvs,portgroup):
 
 
 def main():
-    args=get_args()
+    args = get_args()
     serviceInstance = SmartConnect(host=args.host,
                                    user=args.user,
                                    pwd=args.password,
@@ -106,12 +107,14 @@ def main():
 
     print "Search DvsPortGroup by name ..."
     content = serviceInstance.RetrieveContent()
-    portgroup = get_obj(content, [vim.dvs.DistributedVirtualPortgroup], args.port_group)
+    portgroup = get_obj(content,
+                        [vim.dvs.DistributedVirtualPortgroup],
+                        args.port_group)
     if not portgroup:
         print "DvsPortGroup not Found ..."
         return -1
     dvs = portgroup.config.distributedVirtualSwitch
-    delete_dvsportgroup(dvs,portgroup)
+    delete_dvsportgroup(dvs, portgroup)
 
 if __name__ == '__main__':
     main()

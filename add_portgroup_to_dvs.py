@@ -22,7 +22,7 @@ def get_args():
         description='Argument for talking to vCenter'
     )
 
-    parser.add_argument('-s','--host',
+    parser.add_argument('-s', '--host',
                         required=True,
                         action='store',
                         help='Vcenter Ip')
@@ -62,7 +62,7 @@ def get_args():
     args = parser.parse_args()
 
     if not args.password:
-        args.password=getpass.getpass(prompt='Enter password:')
+        args.password = getpass.getpass(prompt='Enter password:')
 
     return args
 
@@ -70,30 +70,31 @@ def get_args():
 def get_obj(content, vimtype, name):
     obj = None
     container = content.viewManager.CreateContainerView(
-        content.rootFolder,vimtype,True
+        content.rootFolder, vimtype, True
     )
     for c in container.view:
-        if c.name==name:
-            obj=c
+        if c.name == name:
+            obj = c
             break
     return obj
 
 
-def add_portgroup(vds,pgname,vlanId):
-    dvpgConfigSpec=vim.dvs.DistributedVirtualPortgroup.ConfigSpec()
-    dvpgConfigSpec.name=pgname
-    dvpgConfigSpec.numPorts=6000
-    dvpgConfigSpec.description="laujunbupt0913@163.com"
-    dvpgConfigSpec.type="earlyBinding"
-    dvpgConfigSpec.defaultPortConfig=vim.dvs.VmwareDistributedVirtualSwitch.VmwarePortConfigPolicy()
-    dvpgConfigSpec.defaultPortConfig.vlan=vim.dvs.VmwareDistributedVirtualSwitch.VlanIdSpec()
-    dvpgConfigSpec.defaultPortConfig.vlan.vlanId=int(vlanId)
+def add_portgroup(vds, pgname, vlanId):
+    dvpgConfigSpec = vim.dvs.DistributedVirtualPortgroup.ConfigSpec()
+    dvpgConfigSpec.name = pgname
+    dvpgConfigSpec.numPorts = 6000
+    dvpgConfigSpec.description = "laujunbupt0913@163.com"
+    dvpgConfigSpec.type = "earlyBinding"
+    dvpgConfigSpec.defaultPortConfig = vim.dvs.VmwareDistributedVirtualSwitch.VmwarePortConfigPolicy()
+    dvpgConfigSpec.defaultPortConfig.vlan = vim.dvs.VmwareDistributedVirtualSwitch.VlanIdSpec()
+    dvpgConfigSpec.defaultPortConfig.vlan.vlanId = int(vlanId)
 
     vds.CreateDVPortgroup_Task(dvpgConfigSpec)
     print "Portgroup created success ..."
 
+
 def main():
-    args=get_args()
+    args = get_args()
 
     '''
 
@@ -108,11 +109,10 @@ def main():
     '''
 
     serviceInstance = SmartConnect(host=args.host,
-                      user=args.user,
-                      pwd=args.password,
-                      port=int(args.port)
-                      )
-
+                                   user=args.user,
+                                   pwd=args.password,
+                                   port=int(args.port)
+                                   )
 
     if not serviceInstance:
         print("Could not connected ")
@@ -127,17 +127,7 @@ def main():
         print("VDS not found")
         return -1
     print "Create portgroup by name ..."
-    add_portgroup(vds, args.port_group,args.vlanId)
+    add_portgroup(vds, args.port_group, args.vlanId)
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
-
-
-
-
