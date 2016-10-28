@@ -4,7 +4,11 @@ Written by Luckylau
 Github: https://github.com/Luckylau
 Email: laujunbupt0913@163.com
 
-set unique vlanId for dvs ports in use
+Set unique vlanId for dvport when vm nic connects it.
+Note that the dvportgroup'vlanId is "0" in default, and you
+must set "vlan override" True
+
+
 
 Known issues:
 This script is running well in centos6.5
@@ -13,9 +17,9 @@ This script is running well in centos6.5
 from pyVim.connect import SmartConnect, Disconnect
 import atexit
 from pyVmomi import vim
-import sys
 import getpass
 import argparse
+import ssl
 
 
 def get_args():
@@ -77,19 +81,22 @@ def GenerateVlanId(port_used):
 
 
 def set_port(dvs, ports, port_used):
-    i = 0
+    i=0
     port_configs = []
     setvlanId = GenerateVlanId(port_used)
     for port in ports:
-        portconfig = vim.dvs.DistributedVirtualPort.ConfigSpec()
-        portconfig.operation = "edit"
-        portconfig.key = port.key
-        portconfig.setting = vim.dvs.VmwareDistributedVirtualSwitch.VmwarePortConfigPolicy()
-        portconfig.setting.vlan = vim.dvs.VmwareDistributedVirtualSwitch.VlanIdSpec()
-        portconfig.setting.vlan.vlanId = setvlanId[i]
-        i = i + 1
-        port_configs.append(portconfig)
+        if port.config.setting.vlan.vlanId==0:
+            portconfig = vim.dvs.DistributedVirtualPort.ConfigSpec()
+            portconfig.operation = "edit"
+            portconfig.key = port.key
+            portconfig.setting = vim.dvs.VmwareDistributedVirtualSwitch.VmwarePortConfigPolicy()
+            portconfig.setting.vlan = vim.dvs.VmwareDistributedVirtualSwitch.VlanIdSpec()
+            portconfig.setting.vlan.vlanId = setvlanId[i]
+            i=i+1
+            port_configs.append(portconfig)
     dvs.ReconfigureDVPort_Task(port=port_configs)
+    print ("All ports vlanId success...")
+
 
 
 def set_port_vlanId(dvs, portgroup):
@@ -99,19 +106,26 @@ def set_port_vlanId(dvs, portgroup):
     criteria.inside = True
     criteria.portgroupKey = portgroup.key
     ports = dvs.FetchDVPorts(criteria)
-    for port in ports:
-        vlanId = port.config.setting.vlan.vlanId
-        port_used.append(vlanId)
-    set_port(dvs, ports, port_used)
-    print "All ports vlanId success..."
+    if ports:
+        for port in ports:
+            vlanId = port.config.setting.vlan.vlanId
+            port_used.append(vlanId)
+        set_port(dvs, ports, port_used)
+    else:
+        print("No dvports in use ...")
+
 
 
 def main():
     args = get_args()
+    context = None
+    if hasattr(ssl, "_create_unverified_context"):
+        context = ssl._create_unverified_context()
     serviceInstance = SmartConnect(host=args.host,
                                    user=args.user,
                                    pwd=args.password,
-                                   port=int(args.port)
+                                   port=int(args.port),
+                                   sslContext=context
                                    )
 
     if not serviceInstance:
@@ -119,16 +133,16 @@ def main():
         return -1
     atexit.register(Disconnect, serviceInstance)
 
-    print "Search DvsPortGroup by name ..."
+    print ("Search DvsPortGroup by name ...")
     content = serviceInstance.RetrieveContent()
     portgroup = get_obj(content,
                         [vim.dvs.DistributedVirtualPortgroup],
                         args.port_group)
     if not portgroup:
-        print "DvsPortGroup not Found ..."
+        print ("DvsPortGroup not Found ...")
         return -1
     dvs = portgroup.config.distributedVirtualSwitch
-    print "Set unique vlanId for all ports ..."
+    print ("Set unique vlanId for used ports ...")
     set_port_vlanId(dvs, portgroup)
 
 if __name__ == '__main__':
