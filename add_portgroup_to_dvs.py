@@ -4,7 +4,7 @@ Written by Luckylau
 Github: https://github.com/Luckylau
 Email: laujunbupt0913@163.com
 
-add portgroup to dvs ,default portnum=6000
+add portgroup to dvs ,default portnum=6000, set "vlan override" True
 
 Known issues:
 This script is running well in centos6.5,python 2.7
@@ -85,6 +85,8 @@ def add_portgroup(vds, pgname, vlanId):
     dvpgConfigSpec.numPorts = 6000
     dvpgConfigSpec.description = "laujunbupt0913@163.com"
     dvpgConfigSpec.type = "earlyBinding"
+    dvpgConfigSpec.policy=vim.dvs.VmwareDistributedVirtualSwitch.VMwarePortgroupPolicy()
+    dvpgConfigSpec.policy.vlanOverrideAllowed=True
     dvpgConfigSpec.defaultPortConfig = vim.dvs.VmwareDistributedVirtualSwitch.VmwarePortConfigPolicy()
     dvpgConfigSpec.defaultPortConfig.vlan = vim.dvs.VmwareDistributedVirtualSwitch.VlanIdSpec()
     dvpgConfigSpec.defaultPortConfig.vlan.vlanId = int(vlanId)
