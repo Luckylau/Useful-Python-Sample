@@ -4,7 +4,7 @@ Written by Luckylau
 Github: https://github.com/Luckylau
 Email: laujunbupt0913@163.com
 
-delete nic of vm by nic number
+delete nic of vm by nic number ,meanwihle clean the connected port info.
 
 Known issues:
 This script is running well in centos6.5,python 2.7
@@ -87,6 +87,12 @@ def delete_nic(si, vm, nic_number):
     if not virtual_nic_device:
         raise RuntimeError('Virtual {} could not be found.'.format(nic_label))
 
+    print "Clear the information of port ..."
+    portkey = virtual_nic_device.backing.port.portKey
+    switchUuid = virtual_nic_device.backing.port.switchUuid
+    dvs = content.dvSwitchManager.QueryDvsByUuid(switchUuid)
+    clear_portinfo(dvs, portkey)
+
     nic_spec = vim.vm.device.VirtualDeviceSpec()
     nic_spec.operation = vim.vm.device.VirtualDeviceSpec.Operation.remove
     nic_spec.device = virtual_nic_device
@@ -97,7 +103,19 @@ def delete_nic(si, vm, nic_number):
     print "Nic card remoted success ..."
 
 
+def clear_portinfo(dvs, portkey):
+    port_configs = []
+    portconfig = vim.dvs.DistributedVirtualPort.ConfigSpec()
+    portconfig.operation = "edit"
+    portconfig.key = portkey
+    portconfig.name = " "
+    portconfig.description = " "
+    port_configs.append(portconfig)
+    dvs.ReconfigureDVPort_Task(port_configs)
+
+
 def main():
+    global content
     args = get_args()
     serviceInstance = SmartConnect(host=args.host,
                                    user=args.user,
